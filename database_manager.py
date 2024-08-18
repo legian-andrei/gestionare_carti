@@ -1,8 +1,13 @@
+import hashlib
+
 import mysql.connector
 from mysql.connector import errorcode
 
 
 class DatabaseManager:
+    """
+    Clasa pentru gestionarea bazei de date.
+    """
     def __init__(self, host='localhost', user='root', password='rootpa55', database='BookLibrary'):
         """
         Constructor pentru DatabaseManager cu parametrii de conectare
@@ -35,21 +40,14 @@ class DatabaseManager:
             self.cursor = self.connection.cursor()
             print("Connected to database") # de refacut afisarea in pagina
             self.setup_database()
-        except mysql.connector.Error as error:
-            self.handle_error(error)
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+                print("Ceva este in neregula. Credentialele bazei de date sunt gresite.")
+            elif err.errno == errorcode.ER_BAD_DB_ERROR:
+                print("Baza de date nu exista.")
+            else:
+                print(f"Error: {err}")
 
-    def handle_error(self, err):
-        """
-        Functie pentru tratarea erorilor
-
-        :param err: Eroarea primita
-        """
-        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-            print("Ceva este in neregula. Userul sau parola sunt gresite.")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            print("Baza de date nu exista.")
-        else:
-            print(f"Error: {err}")
 
     def setup_database(self):
         """
@@ -131,16 +129,8 @@ class DatabaseManager:
                 print(f"Creating table {table_name}.")
             except mysql.connector.Error as err:
                 if err.errno != errorcode.ER_TABLE_EXISTS_ERROR:
-                    self.handle_error(err)
+                    print(f"Error: {err}")
 
-    def execute_query(self, query):
-        """
-        Functie pentru executarea unui query SQL
-
-        :param query: Query-ul de executat
-        """
-        self.cursor.execute(query)
-        self.connection.commit()
 
     def insert_default_data(self):
         """
@@ -229,7 +219,7 @@ class DatabaseManager:
                 self.cursor.execute(add_nationality, nat)
             except mysql.connector.Error as err:
                 if err.errno != errorcode.ER_DUP_ENTRY:
-                    self.handle_error(err)
+                    print(f"Error: {err}")
 
 
     def insert_default_users(self):
@@ -237,8 +227,8 @@ class DatabaseManager:
         Functie pentru inserarea utilizatorilor default
         """
         users = [
-            ('admin', 'admin', 'admin'),
-            ('user', 'user', 'user')
+            ('admin', hashlib.sha256('admin'.encode()).hexdigest(), 'admin'),
+            ('user', hashlib.sha256('user'.encode()).hexdigest(), 'user')
         ]
         add_user = (
             "INSERT INTO users (username, password, role) "
@@ -250,7 +240,7 @@ class DatabaseManager:
                 self.cursor.execute(add_user, user_info)
             except mysql.connector.Error as err:
                 if err.errno != errorcode.ER_DUP_ENTRY:
-                    self.handle_error(err)
+                    print(f"Error: {err}")
 
 
     def close(self):
@@ -262,6 +252,7 @@ class DatabaseManager:
         if self.connection:
             self.connection.close()
 
+
     def add_entry(self, table, entry):
         """
         Functie pentru adaugarea unei intrari in tabela specificata\
@@ -272,8 +263,28 @@ class DatabaseManager:
         placeholders = ', '.join(['%s'] * len(entry))
         columns = ', '.join(entry.keys())
         query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
-        try:
-            self.cursor.execute(query, list(entry.values()))
-            self.connection.commit()
-        except mysql.connector.Error as err:
-            self.handle_error(err)
+        self.cursor.execute(query, list(entry.values()))
+        self.connection.commit()
+
+
+    def username_used(self, username):
+        """
+        Functie pentru a verifica daca un nume de utilizator este deja folosit
+
+        :param username: Numele de utilizator
+        :return: True daca numele de utilizator este folosit, False altfel
+        """
+        query = "SELECT COUNT(*) FROM users WHERE username = %s"
+        self.cursor.execute(query, username)
+        return self.cursor.fetchone() == 1
+
+
+    def authenticate_user(self, user_data):
+        """
+        Functie pentru autentificarea unui utilizator
+        :param user_data: credentialele utilizatorului
+        :return: datele utilizatorului autentificat sau None, daca autentificarea a esuat
+        """
+        query = "SELECT id, username, role FROM users WHERE username = %s AND password = %s"
+        self.cursor.execute(query, (user_data['username'], user_data['password']))
+        return self.cursor.fetchone()

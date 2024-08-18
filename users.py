@@ -40,7 +40,7 @@ class LoggedInUser(User):
 
     def show_menu(self):
         print('\t\t\t\t------------------------------------------')
-        print('\t\t\t\t|             Bine ai venit!             |')
+        print(f'\t\t\t\t          Bine ai venit, {self.username}!             ')
         print('\t\t\t\t------------------------------------------')
         print('\t\t\t\t|    1. Cauta o carte                    |')
         print('\t\t\t\t|    2. Cauta un autor                   |')
@@ -58,7 +58,7 @@ class AdminUser(LoggedInUser):
 
     def show_menu(self):
         print('\t\t\t\t------------------------------------------')
-        print('\t\t\t\t|             Bine ai venit!             |')
+        print(f'\t\t\t\t          Bine ai venit, {self.username}!             ')
         print('\t\t\t\t------------------------------------------')
         print('\t\t\t\t|    1. Cauta o carte                    |')
         print('\t\t\t\t|    2. Cauta un autor                   |')
