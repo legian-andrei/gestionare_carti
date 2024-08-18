@@ -77,6 +77,7 @@ class DatabaseManager:
             "CREATE TABLE audit ("
             "  id INT AUTO_INCREMENT,"
             "  user_id INT,"
+            "  time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
             "  action VARCHAR(255) NOT NULL,"
             "  PRIMARY KEY (id),"
             "  CONSTRAINT audit_users_fk FOREIGN KEY (user_id)"
@@ -117,8 +118,6 @@ class DatabaseManager:
             "  book_isbn VARCHAR(14),"
             "  author_id INT,"
             "  PRIMARY KEY (book_isbn, author_id),"
-            "  FOREIGN KEY (book_isbn) REFERENCES books(isbn),"
-            "  FOREIGN KEY (author_id) REFERENCES authors(id),"
             "  CONSTRAINT books_authors_book_isbn_fk FOREIGN KEY (book_isbn)"
             "    REFERENCES books(isbn) ON DELETE CASCADE,"
             "  CONSTRAINT books_authors_author_id_fk FOREIGN KEY (author_id)"
@@ -262,3 +261,19 @@ class DatabaseManager:
             self.cursor.close()
         if self.connection:
             self.connection.close()
+
+    def add_entry(self, table, entry):
+        """
+        Functie pentru adaugarea unei intrari in tabela specificata\
+
+        :param table: Tabela in care se adauga intrarea
+        :param entry: Continutul intrarii
+        """
+        placeholders = ', '.join(['%s'] * len(entry))
+        columns = ', '.join(entry.keys())
+        query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+        try:
+            self.cursor.execute(query, list(entry.values()))
+            self.connection.commit()
+        except mysql.connector.Error as err:
+            self.handle_error(err)

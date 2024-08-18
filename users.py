@@ -2,16 +2,22 @@ from abc import ABC, abstractmethod
 
 
 class User(ABC):
-    """Interfata abstracta pentru utilizatori."""
+    """
+    Interfata abstracta pentru utilizatori.
+    """
 
     @abstractmethod
     def show_menu(self):
-        """Afiseaza meniul specific utilizatorului."""
+        """
+        Afiseaza meniul specific utilizatorului.
+        """
         pass
 
 
 class GuestUser(User):
-    """Clasa pentru utilizatorii neconectati."""
+    """
+    Clasa pentru utilizatorii neconectati.
+    """
 
     def show_menu(self):
         print('\t\t\t\t------------------------------------------')
@@ -25,7 +31,12 @@ class GuestUser(User):
 
 
 class LoggedInUser(User):
-    """Clasa pentru utilizatorii conectati."""
+    """
+    Clasa pentru utilizatorii conectati.
+    """
+    def __init__(self, id, username):
+        self.id = id
+        self.username = username
 
     def show_menu(self):
         print('\t\t\t\t------------------------------------------')
@@ -40,8 +51,10 @@ class LoggedInUser(User):
         print('\t\t\t\t\tIntrodu optiunea ta:')
 
 
-class AdminUser(User):
-    """Clasa pentru administratori."""
+class AdminUser(LoggedInUser):
+    """
+    Clasa pentru administratori.
+    """
 
     def show_menu(self):
         print('\t\t\t\t------------------------------------------')
@@ -56,8 +69,3 @@ class AdminUser(User):
         print('\t\t\t\t------------------------------------------')
         print('\t\t\t\t\tApasa ENTER pentru a iesi.')
         print('\t\t\t\t\tIntrodu optiunea ta:')
-
-
-# GuestUser().show_menu()
-# LoggedInUser().show_menu()
-# AdminUser().show_menu()
