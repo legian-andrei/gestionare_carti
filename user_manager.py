@@ -10,6 +10,7 @@ class UserManager:
         self.current_user = GuestUser()
         self.db_manager = db_manager
         self.audit_manager = audit_manager
+        self.auth_attempts = 5
 
     def show_current_menu(self):
         """
@@ -58,8 +59,11 @@ class UserManager:
             print('\t\t\t\t------------------------------------------')
             print('\t\t\t\t|        Te-ai conectat cu succes!       |')
             print('\t\t\t\t------------------------------------------')
+            self.auth_attempts = 5
             self.audit_manager.log_action(self.current_user, "conectare;")
         else:
             print('\t\t\t\t------------------------------------------')
             print('\t\t\t\t| Nume de utilizator sau parola gresite! |')
+            print(f'\t\t\t\t|          Incercari ramase: {self.auth_attempts}          |')
             print('\t\t\t\t------------------------------------------')
+            self.auth_attempts -= 1

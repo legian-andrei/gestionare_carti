@@ -38,13 +38,19 @@ class DatabaseManager:
                 database=self.database
             )
             self.cursor = self.connection.cursor()
-            print("Connected to database") # de refacut afisarea in pagina
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\tConectarea la server s-a realizat cu succes.')
+            print('\t\t\t\t------------------------------------------')
             self.setup_database()
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Ceva este in neregula. Credentialele bazei de date sunt gresite.")
+                print('\t\t\t\t------------------------------------------')
+                print('\t\t\tCeva este in neregula. Credentialele bazei de date sunt gresite.')
+                print('\t\t\t\t------------------------------------------')
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Baza de date nu exista.")
+                print('\t\t\t\t------------------------------------------')
+                print('\t\t\t\tCeva este in neregula. Baza de date nu exista.')
+                print('\t\t\t\t------------------------------------------')
             else:
                 print(f"Error: {err}")
 
