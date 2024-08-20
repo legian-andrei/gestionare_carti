@@ -12,11 +12,13 @@ class UserManager:
         self.audit_manager = audit_manager
         self.auth_attempts = 5
 
+
     def show_current_menu(self):
         """
         Functie pentru afisarea meniului utilizatorului curent.
         """
         self.current_user.show_menu()
+
 
     def create_account(self, username, password):
         """
@@ -32,9 +34,6 @@ class UserManager:
             'role': 'user'
         }
         self.db_manager.add_entry('users', user_data)
-        print('\t\t\t\t------------------------------------------')
-        print('\t\t\t\t|     Contul a fost creat cu succes!     |')
-        print('\t\t\t\t------------------------------------------')
         # self.audit_manager.log_action(self.current_user, "creare cont;")
 
 
@@ -62,8 +61,8 @@ class UserManager:
             self.auth_attempts = 5
             self.audit_manager.log_action(self.current_user, "conectare;")
         else:
+            self.auth_attempts -= 1
             print('\t\t\t\t------------------------------------------')
             print('\t\t\t\t| Nume de utilizator sau parola gresite! |')
             print(f'\t\t\t\t|          Incercari ramase: {self.auth_attempts}          |')
             print('\t\t\t\t------------------------------------------')
-            self.auth_attempts -= 1

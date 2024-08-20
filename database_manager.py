@@ -109,7 +109,7 @@ class DatabaseManager:
 
         TABLES['books'] = (
             "CREATE TABLE books ("
-            "  isbn VARCHAR(14),"
+            "  isbn VARCHAR(16),"
             "  title VARCHAR(255) NOT NULL,"
             "  year INT,"
             "  genre VARCHAR(50),"
@@ -119,7 +119,7 @@ class DatabaseManager:
 
         TABLES['books_authors'] = (
             "CREATE TABLE books_authors ("
-            "  book_isbn VARCHAR(14),"
+            "  book_isbn VARCHAR(16),"
             "  author_id INT,"
             "  PRIMARY KEY (book_isbn, author_id),"
             "  CONSTRAINT books_authors_book_isbn_fk FOREIGN KEY (book_isbn)"
@@ -294,3 +294,59 @@ class DatabaseManager:
         query = "SELECT id, username, role FROM users WHERE username = %s AND password = %s"
         self.cursor.execute(query, (user_data['username'], user_data['password']))
         return self.cursor.fetchone()
+
+
+    def author_exists(self, author_data):
+        """
+        Functie pentru verificarea existentei unui autor in baza de date
+
+        :param author_data:
+        :return: True daca autorul exista, False altfel
+        """
+        query = "SELECT COUNT(*) FROM authors WHERE first_name = %s AND last_name = %s"
+        self.cursor.execute(query, (author_data.first_name, author_data.last_name))
+        return self.cursor.fetchone() == 1
+
+
+    def execute_query(self, query, params=None, fetch_all=False, fetch_one=False):
+        """
+        Functie pentru executarea unui query
+
+        :param query: Query-ul de executat
+        :param params: Parametrii query-ului
+        :param fetch_all: Daca se doresc toate rezultatele
+        :param fetch_one: Daca se doreste un singur rezultat
+        :return: Rezultatele query-ului
+        """
+        try:
+            self.cursor.execute(query, params)
+            if fetch_all:
+                return self.cursor.fetchall()
+            if fetch_one:
+                return self.cursor.fetchone()
+            self.connection.commit()
+        except Exception as e:
+            print(f"Eroare la executarea query-ului: {e}")
+            self.connection.rollback()
+
+
+    def get_nationality_code(self, nationality):
+        """
+        Functie pentru obtinerea codului de tara al unei nationalitati
+        :param nationality: nationalitatea pentru care se doreste codul
+        :return: codul de tara al nationalitatii
+        """
+        query = "SELECT code FROM nationalities WHERE country = %s"
+        code = self.execute_query(query, (nationality, ), fetch_all=True)
+        return code[0][0]
+
+
+    def is_isbn_used(self, isbn):
+        """
+        Functie pentru verificarea existentei unui ISBN in baza de date
+        :param isbn: ISBN-ul pentru care se face verificarea
+        :return: True daca ISBN-ul este folosit, False altfel
+        """
+        query = "SELECT COUNT(*) FROM books WHERE isbn = %s"
+        result = self.execute_query(query, (isbn, ), fetch_one=True)[0]
+        return result == 1

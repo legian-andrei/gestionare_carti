@@ -1,10 +1,13 @@
 
 
 class Book:
-    def __init__(self, title, authors, isbn):
+    def __init__(self, title, authors, year, genre, isbn = None):
         self.title = title
         self.authors = authors
         self.isbn = isbn
+        self.year = year
+        self.genre = genre
+
 
     def __str__(self):
         """
