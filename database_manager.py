@@ -281,7 +281,7 @@ class DatabaseManager:
         :return: True daca numele de utilizator este folosit, False altfel
         """
         query = "SELECT COUNT(*) FROM users WHERE username = %s"
-        self.cursor.execute(query, username)
+        self.cursor.execute(query, (username, ))
         return self.cursor.fetchone() == 1
 
 

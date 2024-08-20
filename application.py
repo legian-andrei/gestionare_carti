@@ -1,7 +1,7 @@
 from audit_manager import *
 from database_manager import *
 from user_manager import *
-from pwinput import pwinput
+import pwinput
 
 
 class Application:
@@ -55,10 +55,10 @@ class Application:
                     return
 
                 print('\t\t\t\t\tIntrodu parola:')
-                password = pwinput('\t\t\t\t\t-> ', mask='*').strip()
+                password = pwinput.pwinput(prompt='\t\t\t\t\t-> ', mask='*').strip()
 
                 print('\t\t\t\t\tConfirma parola:')
-                confirm_password = pwinput('\t\t\t\t\t-> ', mask='*').strip()
+                confirm_password = pwinput.pwinput('\t\t\t\t\t-> ', mask='*').strip()
 
                 # Verific ca parola sa fie aceeasi cu confirmarea
                 if password != confirm_password:
@@ -90,7 +90,7 @@ class Application:
                 print('\t\t\t\t\tIntrodu numele de utilizator:')
                 username = input('\t\t\t\t\t-> ').strip()
                 print('\t\t\t\t\tIntrodu parola:')
-                password = pwinput('\t\t\t\t\t-> ', mask='*').strip()
+                password = pwinput.pwinput('\t\t\t\t\t-> ', mask='*').strip()
 
                 if len(username) == 0 or len(password) == 0:
                     print('\t\t\t\t------------------------------------------')
@@ -123,7 +123,22 @@ class Application:
         :param choice: alegerea facuta de utilizator
         :return:
         """
-        pass
+        match choice:
+            case 1:
+                # 1. Cauta o carte
+                pass
+            case 2:
+                # 2. Cauta un autor
+                pass
+            case 3:
+                # 3. Cauta autori dupa nationalitate
+                pass
+            case 4:
+                # 4. Cauta dupa ISBN
+                pass
+            case _:
+                self.print_invalid_option()
+                return
 
 
     def handle_admin_user_choice(self, choice):
@@ -132,4 +147,25 @@ class Application:
         :param choice: alegerea facuta de utilizator
         :return:
         """
-        pass
+        match choice:
+            case 1:
+                # 1. Cauta o carte
+                pass
+            case 2:
+                # 2. Cauta un autor
+                pass
+            case 3:
+                # 3. Cauta autori dupa nationalitate
+                pass
+            case 4:
+                # 4. Cauta dupa ISBN
+                pass
+            case 5:
+                # 5. Adauga un autor
+                pass
+            case 6:
+                # 6. Adauga o carte
+                pass
+            case _:
+                self.print_invalid_option()
+                return
