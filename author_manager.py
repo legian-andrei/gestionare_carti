@@ -72,6 +72,6 @@ class AuthorManager:
         for book in books_query_result:
             isbn = book[0]
             authors = self.db_manager.get_authors_by_isbn(isbn)
-            books.append(Book(book[1].capitalize(), authors, book[2].capitalize(), book[3], isbn))
+            books.append(Book(title=book[1].capitalize(), authors=authors, year=book[2], genre=book[3].capitalize(), isbn=isbn))
 
         return books if books else None
