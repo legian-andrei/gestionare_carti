@@ -66,3 +66,28 @@ class UserManager:
             print('\t\t\t\t| Nume de utilizator sau parola gresite! |')
             print(f'\t\t\t\t|          Incercari ramase: {self.auth_attempts}          |')
             print('\t\t\t\t------------------------------------------')
+
+    def get_user_by_username(self, username):
+        """
+        Functie pentru obtinerea unui utilizator dupa username.
+        :param username: numele de utilizator
+        :return: obiect de tip User sau None daca nu exista utilizatorul
+        """
+        user_query = "SELECT id, username, role FROM users WHERE username = %s"
+        user_query_result = self.db_manager.execute_query(query=user_query, params=(username,), fetch_one=True)
+        if user_query_result is None:
+            return None
+
+        if user_query_result[2] == 'admin':
+            user = AdminUser(user_query_result[0], user_query_result[1])
+        elif user_query_result[2] == 'user':
+            user = LoggedInUser(user_query_result[0], user_query_result[1])
+        return user
+
+    def promote_user_to_admin(self, user):
+        """
+        Functie pentru promovarea unui utilizator la rol de admin.
+        :param user: obiect de tip User
+        """
+        update_query = "UPDATE users SET role = 'admin' WHERE id = %s"
+        self.db_manager.execute_query(query=update_query, params=(user.id,))
