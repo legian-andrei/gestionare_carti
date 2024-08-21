@@ -3,6 +3,9 @@ import hashlib
 import mysql.connector
 from mysql.connector import errorcode
 
+from author import Author
+from book import Book
+
 
 class DatabaseManager:
     """
@@ -282,7 +285,7 @@ class DatabaseManager:
         """
         query = "SELECT COUNT(*) FROM users WHERE username = %s"
         self.cursor.execute(query, (username, ))
-        return self.cursor.fetchone() == 1
+        return self.cursor.fetchone()[0] == 1
 
 
     def authenticate_user(self, user_data):
@@ -350,3 +353,39 @@ class DatabaseManager:
         query = "SELECT COUNT(*) FROM books WHERE isbn = %s"
         result = self.execute_query(query, (isbn, ), fetch_one=True)[0]
         return result == 1
+
+
+    def get_book_by_isbn(self, isbn):
+        """
+        Functie pentru obtinerea unei carti dupa ISBN
+        :param isbn: ISBN-ul cartii
+        :return: datele cartii
+        """
+        book_query = "SELECT isbn, title, year, genre FROM books WHERE isbn = %s"
+        book = self.execute_query(book_query, (isbn, ), fetch_one=True)
+        if book is None:
+            return None
+        authors = self.get_authors_by_isbn(book[0])
+        return Book(book[1].capitalize(), authors, book[2], book[3].capitalize(), book[0])
+
+
+    def get_author_by_id(self, author_id):
+        """
+        Functie pentru obtinerea unui autor dupa id
+        :param author_id: id-ul autorului
+        :return: datele autorului
+        """
+        query = "SELECT first_name, last_name, nationality from authors WHERE id = %s"
+        author_data = self.execute_query(query, (author_id, ), fetch_one=True)
+        return Author(author_data[0].capitalize(), author_data[1].capitalize(), author_data[2].capitalize())
+
+
+    def get_authors_by_isbn(self, isbn):
+        """
+        Functie pentru obtinerea autorilor unei carti dupa ISBN
+        :param isbn: ISBN-ul cartii
+        :return: lista cu autorii cartii
+        """
+        authors_query = "SELECT author_id FROM books_authors WHERE book_isbn = %s"
+        authors_query_result = self.execute_query(authors_query, (isbn,), fetch_all=True)
+        return [self.get_author_by_id(author[0]) for author in authors_query_result]

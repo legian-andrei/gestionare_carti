@@ -78,3 +78,21 @@ class BookManager:
             if digit.isdigit():
                 sum += int(digit)
         return str(sum % 13)
+
+    def get_books_by_title(self, title):
+        """
+        Functie pentru obtinerea cartilor in functie de titlu.
+        :param title: titlul dupa care se realizeaza cautarea
+        :return: list(Book) sau None daca nu exista carti cu acest titlu
+        """
+        books_query = "SELECT isbn, year, genre FROM books WHERE title = %s"
+        books_query_result = self.db_manager.execute_query(query=books_query, params=(title,), fetch_all=True)
+
+        books = []
+
+        for book in books_query_result:
+            isbn = book[0]
+            authors = self.db_manager.get_authors_by_isbn(isbn)
+            books.append(Book(title=title.capitalize(), authors=authors, year=book[1], genre=book[2].capitalize(), isbn=isbn))
+
+        return books if books else None

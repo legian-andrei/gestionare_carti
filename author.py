@@ -22,7 +22,17 @@ class Author:
 
         :return: Paginarea informatiilor despre autor
         """
-        return (f"""
-                    \t\tNume          : {self.last_name}
-                    \t\tPrenume       : {self.first_name}
-                    \t\tNationalitate : {self.nationality}""")
+        lines = [f"Nume          : {self.last_name}",
+                f"Prenume       : {self.first_name}",
+                f"Nationalitate : {self.nationality}"]
+
+        max_length = 38
+
+        # Formateaza fiecare linie sa inceapa si sa se termine cu '|'
+        formatted_fields = [f"| {line.ljust(max_length)} |" for line in lines]
+        formatted_fields[0] = "\t\t\t\t" + formatted_fields[0]
+
+        # Adauga linia de sus si linia de jos
+        border_line = f"\t\t\t\t{'-' * (max_length + 4)}"
+
+        return f"{border_line}\n" + '\n\t\t\t\t'.join(formatted_fields) + f"\n{border_line}"

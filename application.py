@@ -70,16 +70,20 @@ class Application:
         match choice:
             case '1':
                 # 1. Cauta o carte
-                pass
+                self.search_books_by_title()
+
             case '2':
                 # 2. Cauta un autor
-                pass
+                self.search_books_by_author()
+
             case '3':
                 # 3. Cauta autori dupa nationalitate
-                pass
+                self.search_authors_by_nationality()
+
             case '4':
                 # 4. Cauta dupa ISBN
-                pass
+                self.search_book_by_isbn()
+
             case _:
                 self.print_invalid_option()
                 return
@@ -94,16 +98,20 @@ class Application:
         match choice:
             case '1':
                 # 1. Cauta o carte
-                pass
+                self.search_books_by_title()
+
             case '2':
                 # 2. Cauta un autor
-                pass
+                self.search_books_by_author()
+
             case '3':
                 # 3. Cauta autori dupa nationalitate
-                pass
+                self.search_authors_by_nationality()
+
             case '4':
                 # 4. Cauta dupa ISBN
-                pass
+                self.search_book_by_isbn()
+
             case '5':
                 # 5. Adauga un autor
                 self.create_author()
@@ -281,5 +289,171 @@ class Application:
         """
         print('\t\t\t\t------------------------------------------')
         print('\t\t\t\t|              Date invalide!            |')
+        print('\t\t\t\t------------------------------------------')
+        input('\t\t\t\t\tApasa ENTER pentru a continua.')
+
+    def search_book_by_isbn(self):
+        """
+        Functie pentru cautarea unei carti dupa ISBN.
+        """
+        print('\t\t\t\t\tIntrodu ISBN-ul cartii:')
+        isbn = input('\t\t\t\t\t-> ').strip().lower()
+        if len(isbn) == 0:
+            self.print_invalid_data()
+            return
+
+        self.audit_manager.log_action(self.user_manager.current_user, f"cautare carte dupa ISBN: {isbn};")
+
+        book = self.db_manager.get_book_by_isbn(isbn)
+        if book is None:
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\t|   ISBN-ul nu exista in baza de date.   |')
+            print('\t\t\t\t------------------------------------------')
+            input('\t\t\t\t\tApasa ENTER pentru a continua.')
+            return
+
+        print('\t\t\t\t------------------------------------------')
+        print(book)
+        print('\t\t\t\t------------------------------------------')
+        input('\t\t\t\t\tApasa ENTER pentru a continua.')
+
+    def search_authors_by_nationality(self):
+        """
+        Functie pentru cautarea autorilor dupa nationalitate.
+        """
+        print('\t\t\t\t\tIntrodu tara dorita:')
+        nationality = input('\t\t\t\t\t-> ').strip().lower()
+
+        if len(nationality) == 0:
+            self.print_invalid_data()
+            return
+
+        self.audit_manager.log_action(self.user_manager.current_user, f"cautare autori dupa nationalitate: {nationality};")
+
+        authors = self.author_manager.get_authors_by_nationality(nationality)
+
+        if authors is None:
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\t|             Nu exista autori           |')
+            print('\t\t\t\t|         cu aceasta nationalitate.      |')
+            print('\t\t\t\t------------------------------------------')
+            input('\t\t\t\t\tApasa ENTER pentru a continua.')
+            return
+
+        print('\t\t\t\t------------------------------------------')
+        print('\t\t\t\t|             Autorii cautati:            |')
+        print('\t\t\t\t------------------------------------------')
+        count = 1
+        for author in authors:
+            print(author)
+
+            # Afisarea a cate 4 autori pe pagina
+            if count % 4 == 0 and len(authors) > count:
+                self.print_continue_or_exit()
+                inp = input('\t\t\t\t\t-> ')
+                if len(inp) != 0:
+                    break
+            count += 1
+
+        print('\t\t\t\t------------------------------------------')
+        input('\t\t\t\t\tApasa ENTER pentru a continua.')
+
+    def search_books_by_author(self):
+        """
+        Functie pentru cautarea unei carti dupa autor.
+        """
+        print('\t\t\t\t\tIntrodu prenumele autorului:')
+        first_name = input('\t\t\t\t\t-> ').strip().lower()
+
+        print('\t\t\t\t\tIntrodu numele autorului:')
+        last_name = input('\t\t\t\t\t-> ').strip().lower()
+
+        if len(first_name) == 0 or len(last_name) == 0:
+            self.print_invalid_data()
+            return
+
+        self.audit_manager.log_action(self.user_manager.current_user, f"cautare carti dupa autor: {first_name} {last_name};")
+
+        author_id = self.author_manager.get_author_id(Author(first_name, last_name, ''))
+        if author_id is None:
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\t|   Autorul nu exista in baza de date.   |')
+            print('\t\t\t\t------------------------------------------')
+            input('\t\t\t\t\tApasa ENTER pentru a continua.')
+            return
+
+        books = self.author_manager.get_books_by_author(author_id)
+        if books is None:
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\t|   Autorul nu are carti in baza de date. |')
+            print('\t\t\t\t------------------------------------------')
+            input('\t\t\t\t\tApasa ENTER pentru a continua.')
+            return
+
+        print('\t\t\t\t------------------------------------------')
+        print('\t\t\t\t|             Cartile autorului:          |')
+        print('\t\t\t\t------------------------------------------')
+        count = 1
+        for book in books:
+            print(book)
+
+            # Afisarea a cate 4 carti pe pagina
+            if count % 4 == 0 and len(books) > count:
+                self.print_continue_or_exit()
+                inp = input('\t\t\t\t\t-> ')
+                if len(inp) != 0:
+                    break
+            count += 1
+
+        print('\t\t\t\t------------------------------------------')
+        input('\t\t\t\t\tApasa ENTER pentru a continua.')
+
+    def print_continue_or_exit(self):
+        """
+        Functie pentru afisarea unui mesaj pentru a continua sau a iesi.
+        """
+        print('\t\t\t\t------------------------------------------')
+        print('\t\t\t\t|     Apasa ENTER pentru a continua.     |')
+        print('\t\t\t\t|     Apasa alta tasta pentru a iesi.    |')
+        print('\t\t\t\t------------------------------------------')
+        input('\t\t\t\t\t-> ')
+
+    def search_books_by_title(self):
+        """
+        Functie pentru cautarea unei carti dupa titlu.
+        """
+        print('\t\t\t\t\tIntrodu titlul cartii:')
+        title = input('\t\t\t\t\t-> ').strip().lower()
+        if len(title) == 0:
+            self.print_invalid_data()
+            return
+
+        self.audit_manager.log_action(self.user_manager.current_user, f"cautare carti dupa titlu: {title};")
+
+        books = self.book_manager.get_books_by_title(title)
+
+        if books is None:
+            print('\t\t\t\t------------------------------------------')
+            print('\t\t\t\t|     Nu exista carti cu acest titlu     |')
+            print('\t\t\t\t|            in baza de date.            |')
+            print('\t\t\t\t------------------------------------------')
+            input('\t\t\t\t\tApasa ENTER pentru a continua.')
+            return
+
+        print('\t\t\t\t------------------------------------------')
+        print('\t\t\t\t|             Cartile gasite:            |')
+        print('\t\t\t\t------------------------------------------')
+        count = 1
+        for book in books:
+            print(book)
+
+            # Afisarea a cate 4 carti pe pagina
+            if count % 4 == 0 and len(books) > count:
+                self.print_continue_or_exit()
+                inp = input('\t\t\t\t\t-> ')
+                if len(inp) != 0:
+                    break
+            count += 1
+
         print('\t\t\t\t------------------------------------------')
         input('\t\t\t\t\tApasa ENTER pentru a continua.')
