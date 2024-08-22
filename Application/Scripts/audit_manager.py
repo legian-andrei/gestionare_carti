@@ -1,4 +1,4 @@
-from audit_log import *
+from Application.Data.audit_log import *
 
 
 class AuditManager:

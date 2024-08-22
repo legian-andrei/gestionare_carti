@@ -1,8 +1,8 @@
-from audit_manager import *
-from book_manager import *
-from database_manager import *
-from print_manager import *
-from user_manager import *
+from Application.Scripts.audit_manager import *
+from Application.Scripts.book_manager import *
+from Application.Scripts.database_manager import *
+from Application.Scripts.print_manager import *
+from Application.Scripts.user_manager import *
 import pwinput
 import datetime
 
@@ -118,6 +118,7 @@ class Application:
             case '6':
                 # 6. Adauga o carte
                 self.create_book()
+
             case '7':
                 # 7. Afiseaza logurile pentru un anumit user
                 self.show_audit()

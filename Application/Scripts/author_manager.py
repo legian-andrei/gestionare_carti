@@ -1,5 +1,5 @@
-from author import *
-from book import Book
+from Application.Data.author import *
+from Application.Data.book import *
 
 
 class AuthorManager:

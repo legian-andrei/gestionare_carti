@@ -1,7 +1,7 @@
 import random
 
-from author_manager import *
-from book import *
+from Application.Scripts.author_manager import *
+from Application.Data.book import *
 
 
 class BookManager:
@@ -55,7 +55,6 @@ class BookManager:
             chech_digit = self.calculate_check_digit(isbn_without_cd)
             isbn = f'{isbn_without_cd}{chech_digit}'
 
-        print(isbn)
         return isbn
 
 
@@ -77,7 +76,14 @@ class BookManager:
         for digit in isbn_without_cd:
             if digit.isdigit():
                 sum += int(digit)
+
+        # Numerele modulo 13 sunt de la 0 la 9 si de la A la C. Pentru a avea doar cifre in codul ISBN
+        # se scad 10 de la numerele mai mari sau egale cu 10.
+        if sum % 13 >= 10:
+            return str(sum % 13 - 10)
+
         return str(sum % 13)
+
 
     def get_books_by_title(self, title):
         """

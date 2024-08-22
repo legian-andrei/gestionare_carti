@@ -3,8 +3,8 @@ import hashlib
 import mysql.connector
 from mysql.connector import errorcode
 
-from author import Author
-from book import Book
+from Application.Data.author import Author
+from Application.Data.book import Book
 
 
 class DatabaseManager:

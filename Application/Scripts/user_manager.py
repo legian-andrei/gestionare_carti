@@ -1,5 +1,5 @@
 import hashlib
-from users import *
+from Application.Data.users import *
 
 
 class UserManager:

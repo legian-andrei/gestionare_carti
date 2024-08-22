@@ -1,4 +1,4 @@
-from application import *
+from Application.application import *
 
 
 if __name__ == '__main__':
