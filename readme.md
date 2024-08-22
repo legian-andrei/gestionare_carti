@@ -1,4 +1,4 @@
-# Library Management System
+# Book Management System
 
 ## Descriere
 
